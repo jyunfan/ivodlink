@@ -16,7 +16,8 @@ class IvodSpider(CrawlSpider):
 
     rules = [
             Rule(SgmlLinkExtractor(
-                allow = ('new_vod_1t.jsp\?keyWord=')),
+                allow = ('new_vod_1t.jsp\?.*startyear')),
+                follow = True,
                 callback = 'parse_list'),
     ]
 
@@ -80,7 +81,9 @@ class IvodSpider(CrawlSpider):
         if item['url'].find('YYYY') > 0:
             self.log('Skip invalid mms link: YYYY-MM-DD-HH-MM')
             return
+
         item['description'] = response.meta['desc']
         item['date'] = re.search('\d{4}-\d{2}-\d{2}', item['description']).group()
+        item['id'] = re.search('[^/]+$', item['url']).group()
         return item
 
